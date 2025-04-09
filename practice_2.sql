@@ -1,4 +1,4 @@
--- Ex1: Em dùng ID%2=0 bị lỗi ạ
+-- Ex1: Em dùng ID%2=0 bị lỗi ạ -- QUên chuyển sang MySQL nè
 SELECT DISTINCT CITY FROM STATION
 WHERE MOD(ID,2)=0;
 
@@ -8,7 +8,10 @@ COUNT(*) - COUNT(DISTINCT(CITY))
 FROM STATION;
 
 -- Ex3:
-
+SELECT
+CEILING(AVG(Salary)-AVG(REPLACE(Salary,'0','')))
+FROM EMPLOYEES
+  
 -- Ex4:
 SELECT
 ROUND (SUM(item_count*order_occurrences)::NUMERIC/SUM(order_occurrences),1)
