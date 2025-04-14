@@ -32,11 +32,31 @@ GROUP BY a.customer_id
 HAVING COUNT(DISTINCT b.product_category)=(SELECT COUNT(DISTINCT product_category) FROM products);
 
 -- Ex5:
+SELECT mng.employee_id AS employee_id, mng.name AS name,
+COUNT(emp.reports_to) AS reports_count,
+ROUND(AVG(emp.age)) AS average_age
+FROM Employees AS emp
+LEFT JOIN Employees AS mng
+ON emp.reports_to=mng.employee_id
+GROUP BY mng.name
+HAVING COUNT(emp.reports_to)>0
+ORDER BY mng.employee_id
+
+-- Ex6:
+SELECT b.product_name,
+SUM(a.unit) AS unit
+FROM Orders AS a
+JOIN Products AS b
+ON a.product_id = b.product_id
+WHERE MONTH(a.order_date)=2 AND YEAR(a.order_date)=2020
+GROUP BY b.product_name
+HAVING SUM(a.unit)>= 100;
+  
 -- Ex7:
 SELECT a.page_id
 FROM pages AS a
 LEFT JOIN page_likes AS b
 ON a.page_id=b.page_id
 WHERE b.page_id IS NULL
-ORDER BY a.page_id
+ORDER BY a.page_id;
 
