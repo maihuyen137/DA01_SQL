@@ -33,4 +33,10 @@ HAVING COUNT(DISTINCT b.product_category)=(SELECT COUNT(DISTINCT product_categor
 
 -- Ex5:
 -- Ex7:
+SELECT a.page_id
+FROM pages AS a
+LEFT JOIN page_likes AS b
+ON a.page_id=b.page_id
+WHERE b.page_id IS NULL
+ORDER BY a.page_id
 
