@@ -93,7 +93,40 @@ JOIN category AS c ON b.category_id=c.category_id
 GROUP BY category_name
 ORDER BY so_luong DESC -- Sports: 74 titles
 
--- 
+-- Q5: Chị ơi câu này đáp án chị đưa là Susan Davids 54 movies nma có 2 Susan Davids có ator_id khác nhau ạ
+SELECT a.first_name, a.last_name,
+COUNT (b.film_id) AS so_luong
+FROM actor AS a
+JOIN film_actor AS b
+ON a.actor_id = b.actor_id
+GROUP BY a.actor_id
+ORDER BY so_luong DESC -- GINA DEGENERES: 42 movies
 
+-- Q6:
+SELECT
+COUNT(a.address)
+FROM address AS a
+LEFT JOIN customer AS b
+ON a.address_id=b.address_id
+WHERE b.customer_id IS NULL -- 4 dịa chỉ
 
+-- Q7:
+SELECT a.city,
+SUM(d.amount) AS doanh_thu
+FROM city AS a
+JOIN address AS b ON a.city_id=b.city_id
+JOIN customer AS c ON b.address_id=c.address_id
+JOIN payment AS d ON c.customer_id=d.customer_id
+GROUP BY a.city
+ORDER BY doanh_thu DESC -- Cape Coral: 221.55
 
+-- Q8: Đáp án chị đưa ra là doanh thu thấp nhất í ạ, còn đề bài là cao nhất
+SELECT CONCAT(a.city,', ',e.country) AS city,
+SUM(d.amount) AS doanh_thu
+FROM city AS a
+JOIN address AS b ON a.city_id=b.city_id
+JOIN customer AS c ON b.address_id=c.address_id
+JOIN payment AS d ON c.customer_id=d.customer_id
+JOIN country AS e ON e.country_id=a.country_id
+GROUP BY CONCAT(a.city,', ',e.country)
+ORDER BY doanh_thu -- Tallahassee, United States: 50.85
