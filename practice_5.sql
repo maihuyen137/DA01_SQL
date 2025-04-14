@@ -60,3 +60,40 @@ ON a.page_id=b.page_id
 WHERE b.page_id IS NULL
 ORDER BY a.page_id;
 
+-- MID-COURSE TEST
+-- Q1:
+SELECT DISTINCT replacement_cost FROM film
+ORDER BY replacement_cost -- 9.99
+
+-- Q2:
+SELECT
+CASE
+	WHEN replacement_cost BETWEEN 9.99 AND 19.99 THEN 'low'
+	WHEN replacement_cost BETWEEN 20.00 AND 24.99 THEN 'medium'
+	ELSE 'high'
+END category,
+COUNT (*)
+FROM film
+GROUP BY category -- 514
+
+-- Q3:
+SELECT a.title, a.length, c.name AS category_name
+FROM film AS a
+JOIN film_category AS b ON a.film_id=b.film_id
+JOIN category AS c ON b.category_id=c.category_id
+WHERE c.name IN ('Drama','Sports')
+ORDER BY length DESC -- Phim dài nhất thuộc thể loại Sports - 184
+
+-- Q4:
+SELECT c.name AS category_name,
+COUNT(*) AS so_luong
+FROM film AS a
+JOIN film_category AS b ON a.film_id=b.film_id
+JOIN category AS c ON b.category_id=c.category_id
+GROUP BY category_name
+ORDER BY so_luong DESC -- Sports: 74 titles
+
+-- 
+
+
+
