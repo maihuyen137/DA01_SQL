@@ -6,7 +6,7 @@ FROM job_listings
 GROUP BY company_id, title, description)
 SELECT COUNT (DISTINCT company_id) AS duplicate_companies
 FROM job_count
-WHERE job_count>1
+WHERE job_count>1;
 
 -- Ex2:
 WITH total_spend AS
@@ -20,7 +20,7 @@ WHERE EXTRACT(YEAR FROM transaction_date)='2022'
 GROUP BY category, product)
 SELECT category, product, total_spend
 FROM total_spend
-WHERE ranking<=2
+WHERE ranking<=2;
 
 -- Ex3:
 WITH call_count AS
@@ -31,8 +31,25 @@ GROUP BY policy_holder_id
 HAVING COUNT(case_id)>=3)
 SELECT
 COUNT(policy_holder_id) AS policy_holder_count
-FROM call_count
+FROM call_count;
 
 -- Ex4:
 SELECT page_id FROM pages
-WHERE page_id NOT IN (SELECT page_id FROM page_likes)
+WHERE page_id NOT IN (SELECT page_id FROM page_likes);
+
+-- Ex5:
+WITH active_users_last_mth AS
+(SELECT user_id
+FROM user_actions
+WHERE event_type IN ('sign-in','like','comment')
+AND EXTRACT(MONTH FROM event_date) =6
+AND EXTRACT(YEAR FROM event_date)=2022)
+SELECT
+EXTRACT(MONTH FROM event_date) AS mth,
+COUNT(DISTINCT user_id) AS monthly_active_users
+FROM user_actions
+WHERE EXTRACT(MONTH FROM event_date)=7
+AND EXTRACT(YEAR FROM event_date)=2022
+AND user_id IN (SELECT user_id FROM active_users_last_mth)
+GROUP BY EXTRACT(MONTH FROM event_date);
+
