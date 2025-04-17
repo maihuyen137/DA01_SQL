@@ -32,3 +32,7 @@ HAVING COUNT(case_id)>=3)
 SELECT
 COUNT(policy_holder_id) AS policy_holder_count
 FROM call_count
+
+-- Ex4:
+SELECT page_id FROM pages
+WHERE page_id NOT IN (SELECT page_id FROM page_likes)
