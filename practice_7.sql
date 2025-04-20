@@ -16,11 +16,46 @@ FIRST_VALUE(issued_amount) OVER(PARTITION BY card_name ORDER BY issue_year, issu
 FROM monthly_cards_issued
 ORDER BY issued_amount DESC;
 
+-- Ex3:
+WITH ranking AS
+(SELECT *,
+ROW_NUMBER() OVER(PARTITION BY user_id ORDER BY transaction_date) AS rank
+FROM transactions)
+SELECT user_id, spend, transaction_date
+FROM ranking
+WHERE rank=3;
+
+-- Ex4:
+WITH recent_date AS
+(SELECT transaction_date,
+user_id, product_id,
+RANK() OVER(PARTITION BY user_id ORDER BY transaction_date DESC) AS rank
+FROM user_transactions)
+SELECT transaction_date, user_id,
+COUNT(product_id) AS purchase_count
+FROM recent_date
+WHERE rank=1
+GROUP BY transaction_date, user_id;
+
 -- Ex5:
 SELECT user_id, tweet_date,
 ROUND(AVG(tweet_count) OVER(PARTITION BY user_id ORDER BY tweet_date
 ROWS BETWEEN 2 PRECEDING AND CURRENT ROW),2) AS rolling_avg_3d
-FROM tưeets;
+FROM tweets;
+
+-- Ex6:
+
+-- Ex7:
+WITH total_spend AS
+(SELECT category, product,
+SUM(spend) AS total_spend,
+RANK() OVER(PARTITION BY category ORDER BY SUM(spend) DESC) AS rank
+FROM product_spend
+WHERE EXTRACT(YEAR FROM transaction_date)='2022'
+GROUP BY category, product)
+SELECT category, product, total_spend
+FROM total_spend
+WHERE rank<=2
 
 -- Ex8:
 WITH ranking AS
