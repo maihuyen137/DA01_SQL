@@ -44,7 +44,18 @@ ROWS BETWEEN 2 PRECEDING AND CURRENT ROW),2) AS rolling_avg_3d
 FROM tweets;
 
 -- Ex6:
-
+WITH next_trans AS
+(SELECT *,
+LEAD(transaction_timestamp) OVER(PARTITION BY merchant_id ORDER BY transaction_timestamp) AS next_trans,
+LEAD(amount) OVER(PARTITION BY merchant_id ORDER BY transaction_timestamp) AS next_amount,
+LEAD(credit_card_id) OVER(PARTITION BY merchant_id ORDER BY transaction_timestamp) AS next_card_id
+FROM transactions)
+SELECT
+SUM(CASE WHEN amount=next_amount AND credit_card_id=next_card_id
+AND next_trans-transaction_timestamp<=INTERVAL '10 minutes' THEN 1
+ELSE 0 END) AS payment_count
+FROM next_trans;
+  
 -- Ex7:
 WITH total_spend AS
 (SELECT category, product,
