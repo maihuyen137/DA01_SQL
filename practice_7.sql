@@ -16,6 +16,12 @@ FIRST_VALUE(issued_amount) OVER(PARTITION BY card_name ORDER BY issue_year, issu
 FROM monthly_cards_issued
 ORDER BY issued_amount DESC;
 
+-- Ex5:
+SELECT user_id, tweet_date,
+ROUND(AVG(tweet_count) OVER(PARTITION BY user_id ORDER BY tweet_date
+ROWS BETWEEN 2 PRECEDING AND CURRENT ROW),2) AS rolling_avg_3d
+FROM tưeets;
+
 -- Ex8:
 WITH ranking AS
 (SELECT a.artist_name,
