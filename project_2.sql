@@ -41,3 +41,25 @@ Tháng 1 có 1 khách với AOV = 15,9 nhưng tháng 2 tăng lên AOV = 53,2 v�
 + Đầu 2022, xu hướng tăng trưởng tiếp tục được giữ vững, với số lượng khách tháng 4/2022 đạt 305 người, và AOV giữ vững quanh 58–62 USD*/
 
 -- 3)
+WITH twt_age AS (SELECT gender,
+MAX(age) AS max,
+MIN(age) AS min
+FROM bigquery-public-data.thelook_ecommerce.users
+WHERE created_at BETWEEN '2019-01-01' AND '2022-04-30'
+GROUP BY 1),
+customers AS (
+SELECT first_name, last_name, gender, age,
+'youngest' AS tag
+FROM bigquery-public-data.thelook_ecommerce.users
+WHERE age IN (SELECT min FROM twt_age)
+UNION ALL
+SELECT first_name, last_name, gender, age,
+'oldest' AS tag
+FROM bigquery-public-data.thelook_ecommerce.users
+WHERE age IN (SELECT max FROM twt_age))
+SELECT DISTINCT gender, age,
+COUNT(*) OVER (PARTITION BY gender, age)
+FROM customers
+/* Với khách hàng nam, trẻ nhất là 12 tuổi với 859 người, lớn nhất là 70 tuổi với 851 người
+Với khách hàng nữ, trẻ nhất là 12 tuổi với 837 người, lớn nhất là 70 tuổi với 871 người*/
+
