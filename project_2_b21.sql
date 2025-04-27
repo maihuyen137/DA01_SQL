@@ -7,7 +7,7 @@ FROM bigquery-public-data.thelook_ecommerce.orders
 WHERE status = 'Complete'
 AND FORMAT_TIMESTAMP('%Y-%m',created_at) BETWEEN '2019-01' AND '2022-04'
 GROUP BY 1
-ORDER BY 1
+ORDER BY 1;
 /* Insight: 
 - Từ tháng 1/2019-4/2022, hầu như 1 khách hàng chỉ mua 1 đơn hàng; Tháng 10/2020, 1,6,7,11,12/2021, 1,4/2022: Có khách hàng mua nhiều hơn 1 đơn
 - Về số lượng đơn và lượng khách:
@@ -32,7 +32,7 @@ ON a.order_id = b.order_id
 WHERE a.status = 'Complete'
 AND FORMAT_TIMESTAMP('%Y-%m',a.created_at) BETWEEN '2019-01' AND '2022-04'
 GROUP BY 1
-ORDER BY 1
+ORDER BY 1;
 /* Nhìn chung AOV của các tháng dao động chủ yếu trong khoảng 50-65.
 + Năm 2019, số lượng người mua nhìn chung tăng, có giảm nhẹ ở 1 vài tháng. Tháng 4 có 13 đơn nhưng AOV lớn nhất (~73,1),
 Tháng 1 có 1 khách với AOV = 15,9 nhưng tháng 2 tăng lên AOV = 53,2 với 7 khách. Các tháng khác giá trị AOV dao động trong khoảng 47-69.
@@ -59,7 +59,38 @@ FROM bigquery-public-data.thelook_ecommerce.users
 WHERE age IN (SELECT max FROM twt_age))
 SELECT DISTINCT gender, age,
 COUNT(*) OVER (PARTITION BY gender, age)
-FROM customers
+FROM customers;
 /* Với khách hàng nam, trẻ nhất là 12 tuổi với 859 người, lớn nhất là 70 tuổi với 851 người
 Với khách hàng nữ, trẻ nhất là 12 tuổi với 837 người, lớn nhất là 70 tuổi với 871 người*/
 
+-- 4)
+WITH products AS (SELECT
+FORMAT_TIMESTAMP('%Y-%m',a.created_at) AS month_year,
+a.product_id,
+b.name AS product_name,
+SUM(a.sale_price) AS sales,
+COUNT(*)*AVG(b.cost) AS cost,
+SUM(a.sale_price) - (COUNT(*)*AVG(b.cost)) AS profit
+FROM bigquery-public-data.thelook_ecommerce.order_items AS a
+JOIN bigquery-public-data.thelook_ecommerce.products AS b
+ON a.product_id=b.id
+WHERE a.status = 'Complete'
+GROUP BY 1, 2, 3)
+SELECT *,
+DENSE_RANK() OVER(PARTITION BY month_year ORDER BY profit DESC) AS rank_per_month
+FROM products
+QUALIFY rank_per_month <=5
+ORDER BY month_year;
+
+-- 5)
+SELECT
+DATE(a.created_at) AS dates,
+b.category AS product_category,
+SUM(a.sale_price) AS revenue
+FROM bigquery-public-data.thelook_ecommerce.order_items AS a
+JOIN bigquery-public-data.thelook_ecommerce.products AS b
+ON a.product_id=b.id
+WHERE DATE(a.created_at) BETWEEN '2020-01-15' AND '2020-04-15'
+AND a.status='Complete'
+GROUP BY 1,2
+ORDER BY dates;
