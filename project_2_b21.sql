@@ -69,8 +69,8 @@ FORMAT_TIMESTAMP('%Y-%m',a.created_at) AS month_year,
 a.product_id,
 b.name AS product_name,
 SUM(a.sale_price) AS sales,
-COUNT(*)*AVG(b.cost) AS cost,
-SUM(a.sale_price) - (COUNT(*)*AVG(b.cost)) AS profit
+SUM(b.cost) AS cost,
+SUM(a.sale_price) - SUM(b.cost) AS profit
 FROM bigquery-public-data.thelook_ecommerce.order_items AS a
 JOIN bigquery-public-data.thelook_ecommerce.products AS b
 ON a.product_id=b.id
