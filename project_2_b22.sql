@@ -28,7 +28,7 @@ user_id,
 FROM (SELECT
 user_id,
 created_at,
-MIN(created_at) OVER(PARTITION BY user_id) AS first_purchase_date -- id, ngày mua hàng, ngày đầu mua
+MIN(created_at) OVER(PARTITION BY user_id) AS first_purchase_date
 FROM bigquery-public-data.thelook_ecommerce.orders
 WHERE status = 'Complete'))
 ,cohort AS(SELECT DISTINCT cohort_date,
@@ -59,3 +59,16 @@ ROUND(100-100.00*m3/m1,2)||'%' AS m3,
 ROUND(100-100.00*m4/m1,2)||'%' AS m4
 FROM customer_cohort
 ORDER BY 1
+-- Insight:
+- Số lượng khách mới tăng đều qua thời gian: Tháng 1/2019 có 1 khách mới, đến tháng 4/2022 tăng lên 259 khách
+- Tỷ lệ quay lại mua hàng (retention) rất thấp: Hầu hết các cohort chỉ có 1–2 người quay lại ở M2, M3, M4
+- Một số tháng có hiệu quả giữ chân tốt hơn: 3/2021 có 2 người quay lại trong M2, 3 người ở M3, 1 ở M4
+- Giải pháp:
++ Tối ưu trải nghiệm mua hàng đầu tiên:
+  Gửi email follow-up sau lần mua đầu để nhắc nhở/hỏi cảm nhận.
+  Tặng coupon cho đơn tiếp theo trong vòng 30 ngày.
++ Chạy chương trình chăm sóc khách hàng trong 3 tháng đầu:
+  Email/SMS với sản phẩm liên quan đến lần mua đầu; 
+  Ưu đãi độc quyền cho "khách hàng mới".
++ Phân tích các cohort có retention tốt, làm rõ nguyên nhân và tái áp dụng chiến dịch đó cho các cohort sau
++ Tích điểm, tặng quà sinh nhật, miễn phí vận chuyển cho lần mua tiếp theo,...
