@@ -1,4 +1,5 @@
 -- 1)
+CREATE VIEW vw_ecommerce_analyst AS(
 WITH cte AS (SELECT
 FORMAT_TIMESTAMP('%Y-%m',a.created_at) AS month,
 EXTRACT(YEAR FROM a.created_at) AS year,
@@ -16,4 +17,6 @@ ROUND(100*(tpo-LAG(tpo) OVER(PARTITION BY product_category ORDER BY month))/LAG(
 (tpv-total_cost) AS total_profit,
 ROUND((tpv-total_cost)/total_cost,2) AS profit_to_cost_ratio
 FROM cte
-ORDER BY product_category, month
+ORDER BY product_category, monthmonth)
+
+
